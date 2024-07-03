@@ -1,0 +1,70 @@
+<?php
+$host = "localhost";
+$userName = "root";
+$password = "";
+$dbName = "66_501-03";
+
+// Create connection
+$conn = new mysqli($host, $userName, $password, $dbName);
+
+// Check connections
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Function to handle data removal
+if (isset($_GET['remove'])) {
+    $id_to_remove = $_GET['remove'];
+    $sql_remove = "DELETE FROM tbl_result_in WHERE ID = $id_to_remove";
+    if ($conn->query($sql_remove) === TRUE) {
+        echo "Record removed successfully.";
+    } else {
+        echo "Error removing record: " . $conn->error;
+    }
+}
+
+// SQL query to retrieve data
+$sql = "SELECT * FROM tbl_result_in";
+$result = mysqli_query($conn, $sql);
+
+?>
+
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+        <title>Edit and Remove Data</title>
+    </head>
+
+    <body>
+        <h1>Data Table</h1>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Action</th>
+            </tr>
+            <?php
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                echo "<tr>";
+                echo "<td>" . $row["id"] . "</td>";
+                echo "<td>" . $row["name"] . "</td>";
+                echo "<td>" . $row["quantity"] . "</td>";
+                echo "<td><a href='edit.php?id=" . $row["id"] . "'>Edit</a> | <a href='?remove=" . $row["id"] . "'>Remove</a></td>";
+                echo "</tr>";
+            }
+        } else {
+            echo "<tr><td colspan='4'>No records found</td></tr>";
+        }
+        ?>
+        </table>
+    </body>
+
+    </html>
+
+    <?php
+// Close the database connection
+mysqli_close($conn);
+?>
